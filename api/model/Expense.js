@@ -8,9 +8,14 @@ const columns = {
     },
 
     value: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false
-    }    
+    },
+    
+    dateExpense: {
+        type: Sequelize.DATEONLY,
+        allowNull: false
+    }
 };
 
 const options = {

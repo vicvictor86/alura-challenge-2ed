@@ -6,6 +6,6 @@ const config = require('config');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/income", router);
+app.use("/api/receitas", router);
 
 app.listen(config.get("api.port"), () => {console.log("Servidor rodando")});
