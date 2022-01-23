@@ -25,7 +25,7 @@ module.exports = {
     },
 
     async getById(id){
-        const result = await Model.FindOne({
+        const result = await Model.findOne({
             where : {
                 id : id
             }
@@ -39,7 +39,7 @@ module.exports = {
     },
 
     async getByDescription(description){
-        const result = await Model.FindOne({
+        const result = await Model.findOne({
             where : {
                 description : description
             }
@@ -72,5 +72,20 @@ module.exports = {
 
     async insert(income){
         return await Model.create(income);
+    },
+
+    async update(id, incomeUpdate){
+        return await Model.update(
+            incomeUpdate,
+            {
+                where : { id : id }
+            }
+        );
+    },
+
+    async delete(id){
+        return await Model.destroy({
+            where : { id : id }
+        });
     }
 }
