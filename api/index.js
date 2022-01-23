@@ -3,7 +3,7 @@ const app = express();
 const router = require('./routes');
 const config = require('config');
 const InsuficientFields = require('./error/InsuficientFields');
-const ExistentIncome = require('./error/ExistentIncome');
+const ExistentData = require('./error/ExistentData');
 const NotFound = require('./error/NotFound');
 
 app.use(express.json());
@@ -35,7 +35,7 @@ app.use((error, req, res, next) => {
         status = 400;
     }
 
-    if(error instanceof ExistentIncome){
+    if(error instanceof ExistentData){
         status = 400;
     }
 

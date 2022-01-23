@@ -1,39 +1,39 @@
-const IncomeTable = require('../model/IncomeTable');
+const ExpenseTable = require('../model/ExpenseTable');
 const ExistentData = require('../error/ExistentData');
 const InsuficientFields = require('../error/InsuficientFields');
 
 class IncomeController {
-    constructor({id, description, value, dateIncome, createdAt, updatedAt}) {
+    constructor({id, description, value, dateExpense, createdAt, updatedAt}) {
         this.id = id;
         this.description = description;
         this.value = value;
-        this.dateIncome = dateIncome;
+        this.dateExpense = dateExpense;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     static async getAll(){
-        return await IncomeTable.list();
+        return await ExpenseTable.list();
     }
 
     async findById(id){
-        return await IncomeTable.getById(id);
+        return await ExpenseTable.getById(id);
     }
 
     async create(){
-        if(!this.description || !this.value || !this.dateIncome){
+        if(!this.description || !this.value || !this.dateExpense){
             throw new InsuficientFields();
         }
 
-        const incomesWithSpecificDescription = await IncomeTable.verifyTwoIncome(this.description, this.dateIncome);
-        if(incomesWithSpecificDescription.length > 0){
-            throw new ExistentData("Income");
+        const expenseWithSpecificDescription = await ExpenseTable.verifyTwoIncome(this.description, this.dateExpense);
+        if(expenseWithSpecificDescription.length > 0){
+            throw new ExistentData("Expense");
         }
         
-        const result = await IncomeTable.insert({
+        const result = await ExpenseTable.insert({
             description: this.description,
             value: this.value,
-            dateIncome: this.dateIncome
+            dateExpense: this.dateExpense
         });
 
         this.id = result.id;
@@ -42,9 +42,9 @@ class IncomeController {
     };
 
     async update(){
-        await IncomeTable.getById(this.id);
+        await ExpenseTable.getById(this.id);
 
-        const fields = ["description", "value", "dateIncome"];
+        const fields = ["description", "value", "dateExpense"];
         const updateData = {};
 
         fields.forEach((field) => {
@@ -71,11 +71,11 @@ class IncomeController {
             throw new InsuficientFields();
         }
 
-        await IncomeTable.update(this.id, updateData);
+        await ExpenseTable.update(this.id, updateData);
     }
 
     async delete(){
-        await IncomeTable.delete(this.id);
+        await ExpenseTable.delete(this.id);
     }
 }
 

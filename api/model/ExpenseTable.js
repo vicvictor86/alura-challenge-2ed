@@ -1,4 +1,4 @@
-const Model = require('./Income');
+const Model = require('./Expense');
 const Sequelize = require('sequelize');
 const NotFound = require('../error/NotFound');
 
@@ -18,7 +18,7 @@ module.exports = {
         });
 
         if(!result){
-            throw new NotFound("Income");
+            throw new NotFound("Expense");
         }
 
         return result;
@@ -32,7 +32,7 @@ module.exports = {
         });
 
         if(!result){
-            throw new NotFound("Income");
+            throw new NotFound("Expense");
         }
 
         return result;
@@ -46,32 +46,32 @@ module.exports = {
         });
 
         if(!result){
-            throw new NotFound("Income");
+            throw new NotFound("Expense");
         }
 
         return result;
     },
 
-    async verifyTwoIncome(description, dateIncome){
-        const monthDateIncome = dateIncome.substr(dateIncome.indexOf("-") + 1, 2);
+    async verifyTwoIncome(description, dateExpense){
+        const monthDateExpense = dateExpense.substr(dateExpense.indexOf("-") + 1, 2);
         const result = await Model.findAll({
             where : {
                 [Sequelize.Op.and]: [
                     {description : description},
-                    Sequelize.where(Sequelize.fn("strftime", "%m", Sequelize.col("dateIncome")), monthDateIncome)
+                    Sequelize.where(Sequelize.fn("strftime", "%m", Sequelize.col("dateExpense")), monthDateExpense)
                 ]
             }
         });
 
         if(!result){
-            throw new NotFound("Income");
+            throw new NotFound("Expense");
         }
 
         return result;
     },
 
-    async insert(income){
-        return await Model.create(income);
+    async insert(expense){
+        return await Model.create(expense);
     },
 
     async update(id, incomeUpdate){
