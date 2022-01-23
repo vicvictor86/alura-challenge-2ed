@@ -1,4 +1,6 @@
 const IncomeTable = require('../model/IncomeTable');
+const ExistentIncome = require('../error/ExistentIncome');
+const InsuficientFields = require('../error/InsuficientFields');
 
 class IncomeController {
     constructor({id, description, value, dateIncome, createdAt, updatedAt}) {
@@ -12,13 +14,12 @@ class IncomeController {
 
     async create(){
         if(!this.description || !this.value || !this.dateIncome){
-            throw new Error("Os campos description, value e dateIncome são obrigatórios");
+            throw new InsuficientFields();
         }
 
         const incomesWithSpecificDescription = await IncomeTable.verifyTwoIncome(this.description, this.dateIncome);
-        console.log(incomesWithSpecificDescription);
         if(incomesWithSpecificDescription.length > 0){
-            throw new Error("Essa receita já está cadastrada");
+            throw new ExistentIncome();
         }
         
         const result = await IncomeTable.insert({

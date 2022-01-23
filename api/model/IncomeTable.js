@@ -1,5 +1,6 @@
 const Model = require('./Income');
 const Sequelize = require('sequelize');
+const NotFound = require('../error/NotFound');
 
 module.exports = {
     async list(){
@@ -17,7 +18,7 @@ module.exports = {
         });
 
         if(!result){
-            throw new Error("Não encontrado");
+            throw new NotFound();
         }
 
         return result;
@@ -31,7 +32,7 @@ module.exports = {
         });
 
         if(!result){
-            throw new Error("Não encontrado");
+            throw new NotFound();
         }
 
         return result;
@@ -45,13 +46,12 @@ module.exports = {
         });
 
         if(!result){
-            throw new Error("Não encontrado");
+            throw new NotFound();
         }
 
         return result;
     },
 
-    //Tem que testar o mes e não o dia
     async verifyTwoIncome(description, dateIncome){
         const monthDateIncome = dateIncome.substr(dateIncome.indexOf("-") + 1, 2);
         const result = await Model.findAll({
@@ -64,7 +64,7 @@ module.exports = {
         });
 
         if(!result){
-            throw new Error("Não encontrado");
+            throw new NotFound();
         }
 
         return result;
