@@ -4,7 +4,7 @@ const NotFound = require('../error/NotFound');
 
 module.exports = {
     async list(){
-        return await Model.findAll();
+        return await Model.findAll({ raw : true });
     },
 
     async getByField(fieldName, fieldValue){

@@ -9,7 +9,24 @@ const NotFound = require('./error/NotFound');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/receitas", router);
+app.use("/api/", router);
+
+app.use((req, res, next) => {
+    let reqFormat = req.header("Accept");
+
+    if(reqFormat === "*/*"){
+        reqFormat = "application/json";
+    }
+
+    if(acceptFormats.indexOf(reqFormat) === -1){
+        res.status(406);
+        res.end();
+        return;
+    }
+
+    res.setHeader("Content-Type", reqFormat);
+    next();
+})
 
 app.use((error, req, res, next) => {
     let status = 500;
