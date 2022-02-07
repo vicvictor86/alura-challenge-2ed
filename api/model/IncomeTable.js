@@ -1,10 +1,21 @@
 const Model = require('./Income');
 const Sequelize = require('sequelize');
 const NotFound = require('../error/NotFound');
+const { Op } = require('sequelize');
 
 module.exports = {
     async list(){
         return await Model.findAll({ raw : true });
+    },
+
+    async getByDescription(description){
+        return await Model.findAll({ 
+            where: {
+                description: {
+                    [Op.substring]: description
+                }  
+            } 
+        })
     },
 
     async getByField(fieldName, fieldValue){
@@ -28,20 +39,6 @@ module.exports = {
         const result = await Model.findOne({
             where : {
                 id : id
-            }
-        });
-
-        if(!result){
-            throw new NotFound("Income");
-        }
-
-        return result;
-    },
-
-    async getByDescription(description){
-        const result = await Model.findOne({
-            where : {
-                description : description
             }
         });
 

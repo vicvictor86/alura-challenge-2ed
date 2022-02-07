@@ -1,6 +1,7 @@
 const Model = require('./Expense');
 const Sequelize = require('sequelize');
 const NotFound = require('../error/NotFound');
+const { Op } = require('sequelize');
 
 module.exports = {
     async list(){
@@ -39,17 +40,13 @@ module.exports = {
     },
 
     async getByDescription(description){
-        const result = await Model.findOne({
-            where : {
-                description : description
-            }
-        });
-
-        if(!result){
-            throw new NotFound("Expense");
-        }
-
-        return result;
+        return await Model.findAll({ 
+            where: {
+                description: {
+                    [Op.substring]: description
+                }  
+            } 
+        })
     },
 
     async verifyTwoIncome(description, dateExpense){

@@ -5,10 +5,16 @@ const ExpenseSerializer = require("./Serializer").ExpenseSerializer;
 const ExpenseController = require('./controller/ExpenseController')
 
 router.get("/receitas", async (req, res) => {
-    const incomes = await IncomeController.getAll();
-    res.status(200);
-
+    const description = req.query.descricao;
+    let incomes;
+    if(description){
+        incomes = await IncomeController.getByDescription(description);
+    }else{
+        incomes = await IncomeController.getAll();
+    }
+    
     const serializer = new IncomeSerializer("application/json");
+    res.status(200);
     res.send(serializer.serialize(incomes));
 });
 router.post("/receitas", async (req, res, next) => {
@@ -69,10 +75,16 @@ router.delete("/receitas/:id", async (req, res, next) => {
 });
 
 router.get("/despesas", async (req, res) => {
-    const expenses = await ExpenseController.getAll();
-    res.status(200);
-
+    const description = req.query.descricao;
+    let expenses;
+    if(description){
+        expenses = await ExpenseController.getByDescription(description);
+    }else{
+        expenses = await ExpenseController.getAll();
+    }
+    
     const serializer = new ExpenseSerializer("application/json");
+    res.status(200);
     res.send(serializer.serialize(expenses));
 });
 router.get("/despesas/:id", async (req, res, next) =>{

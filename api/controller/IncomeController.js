@@ -2,6 +2,7 @@ const IncomeTable = require('../model/IncomeTable');
 const ExistentData = require('../error/ExistentData');
 const InsuficientFields = require('../error/InsuficientFields');
 
+
 class IncomeController {
     constructor({id, description, value, dateIncome, createdAt, updatedAt}) {
         this.id = id;
@@ -14,6 +15,13 @@ class IncomeController {
 
     static async getAll(){
         return await IncomeTable.list();
+    }
+
+    static async getByDescription(description){
+        console.log(description);
+        const result = await IncomeTable.getByDescription(description);
+
+        return result;
     }
 
     async findById(id){

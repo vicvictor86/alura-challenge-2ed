@@ -52,7 +52,7 @@ class ExpenseSerializer extends Serializer{
     constructor(contentType, extraFields){
         super();
         this.contentType = contentType;
-        this.publicField = ["id", "description", "value", "dateExpense"].concat(extraFields || []);
+        this.publicField = ["id", "description", "value", "dateExpense", "category"].concat(extraFields || []);
     };
 };
 

@@ -3,17 +3,33 @@ const ExistentData = require('../error/ExistentData');
 const InsuficientFields = require('../error/InsuficientFields');
 
 class IncomeController {
-    constructor({id, description, value, dateExpense, createdAt, updatedAt}) {
+    constructor({id, description, value, dateExpense, category, createdAt, updatedAt}) {
         this.id = id;
         this.description = description;
         this.value = value;
         this.dateExpense = dateExpense;
+        this.category = category;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     static async getAll(){
         return await ExpenseTable.list();
+    }
+
+    async getByField(fieldName, fieldValue){
+        const field = {};
+        field[fieldName] = fieldValue;
+
+        const result = await Model.findAll({
+            where : field
+        });
+
+        return result;
+    }
+
+    static async getByDescription(description){
+        return await ExpenseTable.getByDescription(description);
     }
 
     async findById(id){
@@ -30,10 +46,16 @@ class IncomeController {
             throw new ExistentData("Expense");
         }
         
+        const avaibleValues = ["Alimentação", "Saúde", "Moradia", "Transporte", "Educação", "Lazer", "Imprevisto"];
+        if(!avaibleValues.includes(this.category)){
+            this.category = "Outras";
+        }
+
         const result = await ExpenseTable.insert({
             description: this.description,
             value: this.value,
-            dateExpense: this.dateExpense
+            dateExpense: this.dateExpense,
+            category: this.category
         });
 
         this.id = result.id;
@@ -44,7 +66,7 @@ class IncomeController {
     async update(){
         await ExpenseTable.getById(this.id);
 
-        const fields = ["description", "value", "dateExpense"];
+        const fields = ["description", "value", "dateExpense", "category"];
         const updateData = {};
 
         fields.forEach((field) => {
@@ -67,7 +89,7 @@ class IncomeController {
             }
         });
 
-        if(Object.keys(updateData).length !== 3){
+        if(Object.keys(updateData).length < 3){
             throw new InsuficientFields();
         }
 

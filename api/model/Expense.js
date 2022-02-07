@@ -15,6 +15,12 @@ const columns = {
     dateExpense: {
         type: Sequelize.DATEONLY,
         allowNull: false
+    },
+
+    category: {
+        type: Sequelize.ENUM,
+        values: ["Alimentação", "Saúde", "Moradia", "Transporte", "Educação", "Lazer", "Imprevisto", "Outras"],
+        defaultValue: "Outras"
     }
 };
 
