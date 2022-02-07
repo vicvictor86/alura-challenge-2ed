@@ -36,6 +36,10 @@ class IncomeController {
         return await ExpenseTable.getById(id);
     }
 
+    static async getByMonth(month, year){
+        return await ExpenseTable.getByMonth(month, year);
+    }
+
     async create(){
         if(!this.description || !this.value || !this.dateExpense){
             throw new InsuficientFields();

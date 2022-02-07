@@ -49,20 +49,37 @@ module.exports = {
         })
     },
 
+    async getByMonth(month, year){
+        if(month.length === 1){
+            month = "0" + month;
+        };
+        return await Model.findAll({
+            where : {
+                [Op.and]: [
+                    Sequelize.where(Sequelize.fn("strftime", "%Y", Sequelize.col("dateExpense")), year),
+                    Sequelize.where(Sequelize.fn("strftime", "%m", Sequelize.col("dateExpense")), month)
+                ]
+            }
+        });
+    },
+
     async verifyTwoIncome(description, dateExpense){
         const monthDateExpense = dateExpense.substr(dateExpense.indexOf("-") + 1, 2);
+        const yearDateExpense = dateExpense.substr(0, 4);
+    
         const result = await Model.findAll({
             where : {
                 [Sequelize.Op.and]: [
                     {description : description},
-                    Sequelize.where(Sequelize.fn("strftime", "%m", Sequelize.col("dateExpense")), monthDateExpense)
+                    Sequelize.where(Sequelize.fn("strftime", "%m", Sequelize.col("dateExpense")), monthDateExpense),
+                    Sequelize.where(Sequelize.fn("strftime", "%Y", Sequelize.col("dateExpense")), yearDateExpense)
                 ]
             }
         });
 
         if(!result){
             throw new NotFound("Expense");
-        }
+        };
 
         return result;
     },

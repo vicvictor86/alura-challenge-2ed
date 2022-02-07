@@ -31,6 +31,7 @@ router.post("/receitas", async (req, res, next) => {
         next(error);
     }
 });
+
 router.get("/receitas/:id", async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -74,6 +75,20 @@ router.delete("/receitas/:id", async (req, res, next) => {
     }
 });
 
+router.get("/receitas/:ano/:mes", async (req, res, next) => {
+    try{
+        const year = req.params.ano;
+        const month = req.params.mes;
+
+        const wantedIncome = await IncomeController.getByMonth(month, year);
+
+        const serializer = new IncomeSerializer("application/json");
+        res.send(serializer.serialize(wantedIncome));
+    } catch (error) {
+        next(error);
+    }
+})
+
 router.get("/despesas", async (req, res) => {
     const description = req.query.descricao;
     let expenses;
@@ -87,19 +102,6 @@ router.get("/despesas", async (req, res) => {
     res.status(200);
     res.send(serializer.serialize(expenses));
 });
-router.get("/despesas/:id", async (req, res, next) =>{
-    try {
-        const id = req.params.id;
-        const expense = new ExpenseController({id : id});
-
-        const wantedExpense = await expense.findById(id);
-
-        const serializer = new ExpenseSerializer("application/json");
-        res.send(serializer.serialize(wantedExpense));
-    } catch (error) {
-        next(error);
-    }
-})
 router.post("/despesas", async (req, res, next) => {
     const data = req.body;
 
@@ -111,6 +113,20 @@ router.post("/despesas", async (req, res, next) => {
         const serializer = new ExpenseSerializer("application/json");
         res.send(serializer.serialize(expense));
     } catch(error) {
+        next(error);
+    }
+});
+
+router.get("/despesas/:id", async (req, res, next) =>{
+    try {
+        const id = req.params.id;
+        const expense = new ExpenseController({id : id});
+
+        const wantedExpense = await expense.findById(id);
+
+        const serializer = new ExpenseSerializer("application/json");
+        res.send(serializer.serialize(wantedExpense));
+    } catch (error) {
         next(error);
     }
 });
@@ -143,6 +159,20 @@ router.delete("/despesas/:id", async (req, res, next) => {
         next(error);
     }
 })
+
+router.get("/despesas/:ano/:mes", async (req, res, next) => {
+    try{
+        const year = req.params.ano;
+        const month = req.params.mes;
+
+        const wantedExpense = await ExpenseController.getByMonth(month, year);
+
+        const serializer = new ExpenseSerializer("application/json");
+        res.send(serializer.serialize(wantedExpense));
+    } catch (error) {
+        next(error);
+    }
+});
 
 
 module.exports = router;
