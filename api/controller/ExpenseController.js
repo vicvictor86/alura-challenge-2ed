@@ -1,8 +1,9 @@
 const ExpenseTable = require('../model/ExpenseTable');
 const ExistentData = require('../error/ExistentData');
 const InsuficientFields = require('../error/InsuficientFields');
+const ExpenseSerializer = require("../Serializer").ExpenseSerializer;
 
-class IncomeController {
+class ExpenseController {
     constructor({id, description, value, dateExpense, category, createdAt, updatedAt}) {
         this.id = id;
         this.description = description;
@@ -103,6 +104,90 @@ class IncomeController {
     async delete(){
         await ExpenseTable.delete(this.id);
     }
+
+    static async getExpense(req, res){
+        const description = req.query.descricao;
+        let expenses;
+        if(description){
+            expenses = await ExpenseController.getByDescription(description);
+        }else{
+            expenses = await ExpenseController.getAll();
+        }
+        
+        const serializer = new ExpenseSerializer("application/json");
+        res.status(200).send(serializer.serialize(expenses));
+    }
+
+    static async createExpense(req, res, next){
+        const data = req.body;
+
+        try {
+            const expense = new ExpenseController(data);
+            await expense.create();
+            
+            const serializer = new ExpenseSerializer("application/json");
+            res.status(201).send(serializer.serialize(expense));
+        } catch(error) {
+            next(error);
+        }
+    }
+
+    static async getExpenseId(req, res, next){
+        try {
+            const id = req.params.id;
+            const expense = new ExpenseController({id : id});
+    
+            const wantedExpense = await expense.findById(id);
+    
+            const serializer = new ExpenseSerializer("application/json");
+            res.send(serializer.serialize(wantedExpense));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async updateExpense(req, res, next) {
+        try {
+            const id = req.params.id;
+            const dataReceive = req.body;
+            const data = Object.assign({}, dataReceive, {id : id});
+    
+            const expense = new ExpenseController(data);
+            await expense.update();
+    
+            res.status(204).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async deleteExpense(req, res, next) {
+        try {
+            const id = req.params.id;
+            const expense = new ExpenseController({id : id});
+    
+            await expense.findById(id);
+            await expense.delete();
+    
+            res.status(204).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getExpenseByMonth(req, res, next){
+        try{
+            const year = req.params.ano;
+            const month = req.params.mes;
+    
+            const wantedExpense = await ExpenseController.getByMonth(month, year);
+    
+            const serializer = new ExpenseSerializer("application/json");
+            res.send(serializer.serialize(wantedExpense));
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
-module.exports = IncomeController;
+module.exports = ExpenseController;

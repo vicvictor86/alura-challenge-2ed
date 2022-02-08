@@ -1,178 +1,26 @@
 const router = require('express').Router();
 const IncomeController = require('./controller/IncomeController');
-const IncomeSerializer = require("./Serializer").IncomeSerializer;
-const ExpenseSerializer = require("./Serializer").ExpenseSerializer;
-const ExpenseController = require('./controller/ExpenseController')
+const ExpenseController = require('./controller/ExpenseController');
+const SummaryController = require('./controller/SummaryController');
 
-router.get("/receitas", async (req, res) => {
-    const description = req.query.descricao;
-    let incomes;
-    if(description){
-        incomes = await IncomeController.getByDescription(description);
-    }else{
-        incomes = await IncomeController.getAll();
-    }
-    
-    const serializer = new IncomeSerializer("application/json");
-    res.status(200);
-    res.send(serializer.serialize(incomes));
-});
-router.post("/receitas", async (req, res, next) => {
-    const data = req.body;
+router.get("/receitas", IncomeController.getIncome);
+router.post("/receitas", IncomeController.createIncome);
 
-    try {
-        const income = new IncomeController(data);
-        await income.create();
-        res.status(201);
+router.get("/receitas/:id", IncomeController.getIncomeId);
+router.put("/receitas/:id", IncomeController.updateIncome);
+router.delete("/receitas/:id", IncomeController.deleteIncome);
 
-        const serializer = new IncomeSerializer("application/json");
-        res.send(serializer.serialize(income));
-    } catch(error) {
-        next(error);
-    }
-});
+router.get("/receitas/:ano/:mes", IncomeController.getIncomeByMonth);
 
-router.get("/receitas/:id", async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const income = new IncomeController({id : id});
+router.get("/despesas", ExpenseController.getExpense);
+router.post("/despesas", ExpenseController.createExpense);
 
-        const wantedIncome = await income.findById(id);
+router.get("/despesas/:id", ExpenseController.getExpenseId);
+router.put("/despesas/:id", ExpenseController.updateExpense);
+router.delete("/despesas/:id", ExpenseController.deleteExpense);
 
-        const serializer = new IncomeSerializer("application/json");
-        res.send(serializer.serialize(wantedIncome));
-    } catch (error) {
-        next(error);
-    }
-});
-router.put("/receitas/:id", async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const dataReceive = req.body;
-        const data = Object.assign({}, dataReceive, {id : id});
+router.get("/despesas/:ano/:mes", ExpenseController.getExpenseByMonth);
 
-        const income = new IncomeController(data);
-        await income.update();
-
-        res.status(204);
-        res.end();
-    } catch (error) {
-        next(error);
-    }
-});
-router.delete("/receitas/:id", async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const income = new IncomeController({id : id});
-
-        await income.findById(id);
-        await income.delete();
-
-        res.status(204);
-        res.end();
-    } catch (error) {
-        next(error);
-    }
-});
-
-router.get("/receitas/:ano/:mes", async (req, res, next) => {
-    try{
-        const year = req.params.ano;
-        const month = req.params.mes;
-
-        const wantedIncome = await IncomeController.getByMonth(month, year);
-
-        const serializer = new IncomeSerializer("application/json");
-        res.send(serializer.serialize(wantedIncome));
-    } catch (error) {
-        next(error);
-    }
-})
-
-router.get("/despesas", async (req, res) => {
-    const description = req.query.descricao;
-    let expenses;
-    if(description){
-        expenses = await ExpenseController.getByDescription(description);
-    }else{
-        expenses = await ExpenseController.getAll();
-    }
-    
-    const serializer = new ExpenseSerializer("application/json");
-    res.status(200);
-    res.send(serializer.serialize(expenses));
-});
-router.post("/despesas", async (req, res, next) => {
-    const data = req.body;
-
-    try {
-        const expense = new ExpenseController(data);
-        await expense.create();
-        res.status(201);
-
-        const serializer = new ExpenseSerializer("application/json");
-        res.send(serializer.serialize(expense));
-    } catch(error) {
-        next(error);
-    }
-});
-
-router.get("/despesas/:id", async (req, res, next) =>{
-    try {
-        const id = req.params.id;
-        const expense = new ExpenseController({id : id});
-
-        const wantedExpense = await expense.findById(id);
-
-        const serializer = new ExpenseSerializer("application/json");
-        res.send(serializer.serialize(wantedExpense));
-    } catch (error) {
-        next(error);
-    }
-});
-router.put("/despesas/:id", async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const dataReceive = req.body;
-        const data = Object.assign({}, dataReceive, {id : id});
-
-        const expense = new ExpenseController(data);
-        await expense.update();
-
-        res.status(204);
-        res.end();
-    } catch (error) {
-        next(error);
-    }
-})
-router.delete("/despesas/:id", async (req, res, next) => {
-    try {
-        const id = req.params.id;
-        const expense = new ExpenseController({id : id});
-
-        await expense.findById(id);
-        await expense.delete();
-
-        res.status(204);
-        res.end();
-    } catch (error) {
-        next(error);
-    }
-})
-
-router.get("/despesas/:ano/:mes", async (req, res, next) => {
-    try{
-        const year = req.params.ano;
-        const month = req.params.mes;
-
-        const wantedExpense = await ExpenseController.getByMonth(month, year);
-
-        const serializer = new ExpenseSerializer("application/json");
-        res.send(serializer.serialize(wantedExpense));
-    } catch (error) {
-        next(error);
-    }
-});
-
+router.get("/resumo/:ano/:mes", SummaryController.getSummary);
 
 module.exports = router;

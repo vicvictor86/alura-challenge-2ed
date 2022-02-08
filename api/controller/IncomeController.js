@@ -1,6 +1,7 @@
 const IncomeTable = require('../model/IncomeTable');
 const ExistentData = require('../error/ExistentData');
 const InsuficientFields = require('../error/InsuficientFields');
+const IncomeSerializer = require("../Serializer").IncomeSerializer;
 
 class IncomeController {
     constructor({id, description, value, dateIncome, createdAt, updatedAt}) {
@@ -17,7 +18,6 @@ class IncomeController {
     }
 
     static async getByDescription(description){
-        console.log(description);
         const result = await IncomeTable.getByDescription(description);
 
         return result;
@@ -87,6 +87,90 @@ class IncomeController {
 
     async delete(){
         await IncomeTable.delete(this.id);
+    }
+
+    static async getIncome(req, res){
+        const description = req.query.descricao;
+        let incomes;
+        if(description){
+            incomes = await IncomeController.getByDescription(description);
+        }else{
+            incomes = await IncomeController.getAll();
+        }
+        
+        const serializer = new IncomeSerializer("application/json");
+        res.status(200).send(serializer.serialize(incomes));
+    }
+
+    static async getIncomeId(req, res, next){
+        try {
+            const id = req.params.id;
+            const income = new IncomeController({id : id});
+    
+            const wantedIncome = await income.findById(id);
+    
+            const serializer = new IncomeSerializer("application/json");
+            res.send(serializer.serialize(wantedIncome));
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async createIncome(req, res, next){
+        const data = req.body;
+
+        try {
+            const income = new IncomeController(data);
+            await income.create();
+            const serializer = new IncomeSerializer("application/json");
+            
+            res.status(201).send(serializer.serialize(income));
+        } catch(error) {
+            next(error);
+        }
+    }
+
+    static async updateIncome(req, res, next){
+        try {
+            const id = req.params.id;
+            const dataReceive = req.body;
+            const data = Object.assign({}, dataReceive, {id : id});
+    
+            const income = new IncomeController(data);
+            await income.update();
+    
+            res.status(204).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async deleteIncome(req, res, next){
+        try {
+            const id = req.params.id;
+            const income = new IncomeController({id : id});
+    
+            await income.findById(id);
+            await income.delete();
+    
+            res.status(204).end();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getIncomeByMonth(req, res, next){
+        try{
+            const year = req.params.ano;
+            const month = req.params.mes;
+    
+            const wantedIncome = await IncomeController.getByMonth(month, year);
+    
+            const serializer = new IncomeSerializer("application/json");
+            res.send(serializer.serialize(wantedIncome));
+        } catch (error) {
+            next(error);
+        }
     }
 }
 
